@@ -83,11 +83,11 @@ namespace ClaimxWeb
             string BatchName = Data[0].BATCHNAME;
             int Seq = Data[0].CT03_BATCHSEQN;
 
-            if(!Directory.Exists(Server.MapPath(mstr_userid+"\\"+ BatchName)))
-                Directory.CreateDirectory(Server.MapPath(mstr_userid+"\\"+BatchName));
+            if(!Directory.Exists(Server.MapPath("KEY\\" + mstr_userid+"\\"+ BatchName)))
+                Directory.CreateDirectory(Server.MapPath("KEY\\" + mstr_userid + "\\" + BatchName));
             
             string flname = BatchName + "_CT03_" + Seq.ToString() + ".XML";
-            System.IO.File.WriteAllText(Server.MapPath(mstr_userid+"\\"+BatchName+ "\\" + flname), Serealize<CT03>(ref Data));
+            System.IO.File.WriteAllText(Server.MapPath("KEY\\" + mstr_userid + "\\" + BatchName + "\\" + flname), Serealize<CT03>(ref Data));
             return true;
         }
 
@@ -96,7 +96,7 @@ namespace ClaimxWeb
             string BatchName = Data[0].BATCHNAME;
             int Seq = Data[0].CT02_BATCHSEQN;
 
-            if (!Directory.Exists(Server.MapPath(mstr_userid + "\\" + BatchName)))
+            if (!Directory.Exists(Server.MapPath("KEY\\" + mstr_userid + "\\" + BatchName)))
                 return false;
 
             string flname = BatchName + "_CT02_" + Seq.ToString() + ".XML";
@@ -108,12 +108,12 @@ namespace ClaimxWeb
         {
             string BatchName = Data[0].BATCHNAME;
 
-            if (!Directory.Exists(Server.MapPath(mstr_userid + "\\" + BatchName)))
+            if (!Directory.Exists(Server.MapPath("KEY\\" + mstr_userid + "\\" + BatchName)))
                 return false;
 
             
             string flname = BatchName + "_CT01"  + ".XML";
-            System.IO.File.WriteAllText(Server.MapPath(mstr_userid + "\\" + BatchName + "\\" + flname), Serealize<CT01>(ref Data));
+            System.IO.File.WriteAllText(Server.MapPath("KEY\\" + mstr_userid + "\\" + BatchName + "\\" + flname), Serealize<CT01>(ref Data));
             return true;
         }
 
