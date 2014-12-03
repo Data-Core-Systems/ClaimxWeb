@@ -26,6 +26,7 @@ namespace ClaimxWeb.BusinessObject
         private string _ct01_status1;
         private string _ct01_status2;
         private string _ct01_status3;
+
        
 
         
