@@ -104,12 +104,15 @@ namespace ClaimxWeb
             return true;
         }
 
-        public bool WriteXMLCT01(IList<CT01> Data, string BatchName, int Seq)
+        public bool WriteXMLCT01(IList<CT01> Data)
         {
+            string BatchName = Data[0].BATCHNAME;
+
             if (!Directory.Exists(Server.MapPath(mstr_userid + "\\" + BatchName)))
                 return false;
 
-            string flname = BatchName + "_CT01_" + Seq.ToString() + ".XML";
+            
+            string flname = BatchName + "_CT01"  + ".XML";
             System.IO.File.WriteAllText(Server.MapPath(mstr_userid + "\\" + BatchName + "\\" + flname), Serealize<CT01>(ref Data));
             return true;
         }
