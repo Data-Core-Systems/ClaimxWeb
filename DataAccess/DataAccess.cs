@@ -9,13 +9,15 @@ using System.IO;
 using System.Data.OracleClient;
 using System.Data;
 using WFAPI;
+using System.Web;
+using System.Xml.Serialization;
 
 namespace ClaimxWeb.DataAccess
 {
     public class DataAccess
     {
         public SQL DB = new SQL(System.Configuration.ConfigurationManager.ConnectionStrings["Conn"].ConnectionString);
-      
+        public string UserID = "";
 
         //Connection to database
         protected void ConnectDB()
@@ -313,7 +315,195 @@ namespace ClaimxWeb.DataAccess
             }
         }
 
-       
+        // Added By SOURIK
+        //****************************************************
+        public bool WriteXMLCT03(IList<CT03> Data)
+        {
+            string BatchName = Data[0].BATCHNAME;
+            int Seq = Data[0].CT03_BATCHSEQN;
 
+            if (!Directory.Exists(HttpContext.Current.Server.MapPath("KEY\\" + UserID + "\\" + BatchName)))
+                Directory.CreateDirectory(HttpContext.Current.Server.MapPath("KEY\\" + UserID + "\\" + BatchName));
+
+            string flname = BatchName + "_CT03_" + Seq.ToString() + ".XML";
+            System.IO.File.WriteAllText(HttpContext.Current.Server.MapPath("KEY\\" + UserID + "\\" + BatchName + "\\" + flname), Serealize<CT03>(ref Data));
+            return true;
+        }
+        
+        public bool WriteXMLCT02(IList<CT02> Data)
+        {
+            string BatchName = Data[0].BATCHNAME;
+            
+
+            if (!Directory.Exists(HttpContext.Current.Server.MapPath("KEY\\" + UserID + "\\" + BatchName)))
+                return false;
+
+            string flname = BatchName + "_CT02" + ".XML";
+            System.IO.File.WriteAllText(HttpContext.Current.Server.MapPath(UserID + "\\" + BatchName + "\\" + flname), Serealize<CT02>(ref Data));
+            return true;
+        }
+
+        public bool WriteXMLCT01(IList<CT01> Data)
+        {
+            string BatchName = Data[0].BATCHNAME;
+
+            if (!Directory.Exists(HttpContext.Current.Server.MapPath("KEY\\" + UserID + "\\" + BatchName)))
+                return false;
+
+
+            string flname = BatchName + "_CT01" + ".XML";
+            System.IO.File.WriteAllText(HttpContext.Current.Server.MapPath("KEY\\" + UserID + "\\" + BatchName + "\\" + flname), Serealize<CT01>(ref Data));
+            return true;
+        }
+
+        private string Serealize<T>(ref IList<T> items)
+        {
+            var stringwriter = new System.IO.StringWriter();
+            var serializer = new XmlSerializer(typeof(List<T>), new Type[] { typeof(T) });
+            serializer.Serialize(stringwriter, items);
+            return stringwriter.ToString();
+        }
+
+        public List<T> DeSerealize<T>(string FullFileName)
+        {
+            try
+            {
+                var stringReader = new System.IO.StringReader(System.IO.File.ReadAllText(FullFileName));
+                var serializer = new XmlSerializer(typeof(List<T>), new Type[] { typeof(T) });
+                return (List<T>)serializer.Deserialize(stringReader);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        
+        public bool SaveCT01(IList<CT01> CT01Data)
+        {
+            foreach (CT01 SingleRecord in CT01Data)
+            {
+                OracleParameter[] param = new OracleParameter[6];
+                param[0] = new OracleParameter("mstr_job", SingleRecord.JOBNUMBER);
+                param[1] = new OracleParameter("mstr_batch", SingleRecord.BATCHNAME);
+                param[2] = new OracleParameter("mstr_bstepid", SingleRecord.CT01_BSTEPID);
+                param[3] = new OracleParameter("mstr_CDate", SingleRecord.CT01_CDATE);
+                param[4] = new OracleParameter("mstr_checkout", SingleRecord.CT01_CHECKOUTBY);
+                
+                param[5] = new OracleParameter();
+
+                param[5].ParameterName = "batchCT01";
+                param[5].OracleType = OracleType.Cursor;
+                param[5].Direction = ParameterDirection.Output;
+
+                int res = DB.ExeSpNonQuery("ct01_DataSave", param);
+                if (res != 0)
+                    return false;
+            }
+            return false;
+        }
+        public bool SaveCT02(IList<CT02> CT02Data)
+        {
+            foreach (CT02 SingleRecord in CT02Data)
+            {
+                OracleParameter[] param = new OracleParameter[5];
+                param[0] = new OracleParameter("mstr_job", SingleRecord.JOBNUMBER);
+                param[1] = new OracleParameter("mstr_batch", SingleRecord.BATCHNAME);
+                param[2] = new OracleParameter("mstr_seq", SingleRecord.CT02_BATCHSEQN);
+                param[3] = new OracleParameter("mstr_fld_seq", SingleRecord.CT02_CLAIMSTAT);
+               
+
+                param[4] = new OracleParameter();
+
+                param[4].ParameterName = "batchCT02";
+                param[4].OracleType = OracleType.Cursor;
+                param[4].Direction = ParameterDirection.Output;
+
+                int res = DB.ExeSpNonQuery("ct02_DataSave", param);
+                if (res != 0)
+                    return false;
+            }
+            return false;
+        }
+        public bool SaveCT03(IList<CT03> CT03Data)
+        {
+            foreach (CT03 SingleRecord in CT03Data)
+            {
+                OracleParameter[] param = new OracleParameter[7];
+                param[0] = new OracleParameter("mstr_job", SingleRecord.JOBNUMBER);
+                param[1] = new OracleParameter("mstr_batch", SingleRecord.BATCHNAME);
+                param[2] = new OracleParameter("mstr_seq", SingleRecord.CT03_BATCHSEQN);
+                param[3] = new OracleParameter("mstr_fld_seq", SingleRecord.CT03_FIELDSEQN);
+                param[4] = new OracleParameter("mstr_fld_data", SingleRecord.CT03_FIELD_DATA);
+                param[5] = new OracleParameter("mstr_fld_data", SingleRecord.CT03_FIELD_REJECT);
+                
+                param[6] = new OracleParameter();
+
+                param[6].ParameterName = "batchCT03";
+                param[6].OracleType = OracleType.Cursor;
+                param[6].Direction = ParameterDirection.Output;
+
+                int res = DB.ExeSpNonQuery("ct03_DataSave", param);
+                if (res != 0)
+                    return false;
+            }
+            return false;
+        }
+
+
+        public IList<CT01> LoadALLBatchData(string JobNo, int stage, string userid, int nextStage)
+        {
+            //ConnectDB();
+
+            IList<CT01> CT01List = new List<CT01>();
+            try
+            {
+                //Calling stored procedure to load batch attribute list
+                OracleParameter[] param = new OracleParameter[5];
+                param[0] = new OracleParameter("mstr_job", JobNo);
+                param[1] = new OracleParameter("mstr_code", stage);
+                param[2] = new OracleParameter("mstr_user", userid);
+                param[3] = new OracleParameter("mstr_nextstage", nextStage);
+                param[4] = new OracleParameter();
+                param[4].ParameterName = "batchCT01";
+                param[4].OracleType = OracleType.Cursor;
+                param[4].Direction = ParameterDirection.Output;
+                DataTable dt = DB.ExeSpSelect("ct01_batchselect", param);
+
+                for(int i=0;i<dt.Rows.Count;i++)
+                {
+
+                    //Creating object for ct01
+                    CT01 obj_ct01 = new CT01();
+                    obj_ct01.JOBNUMBER = dt.Rows[i]["ct01_jobnumber"].ToString();
+                    obj_ct01.BATCHNAME = dt.Rows[i]["ct01_batchname"].ToString();
+                    obj_ct01.CT01_BSTEPID = Convert.ToInt32(dt.Rows[i]["ct01_bstepid"].ToString());
+                    obj_ct01.CT01_BSTATID = dt.Rows[i]["ct01_bstatid"].ToString();
+                    obj_ct01.CT01_BATCHHOME = dt.Rows[i]["ct01_batchhome"].ToString();
+                    obj_ct01.CT01_CDATE = Convert.ToDateTime(dt.Rows[i]["ct01_cdate"].ToString());
+                    obj_ct01.CT01_RDATE = Convert.ToDateTime(dt.Rows[i]["ct01_rdate"].ToString());
+                    obj_ct01.CT01_CHECKOUTBY = dt.Rows[i]["ct01_checkoutby"].ToString();
+                    obj_ct01.CT01_EICN = dt.Rows[i]["ct01_eicn"].ToString();
+                    obj_ct01.CT01_SICN = dt.Rows[i]["ct01_sicn"].ToString();
+                    obj_ct01.CT01_NUMCLAIMS = Convert.ToInt32(dt.Rows[i]["ct01_numclaims"].ToString());
+                    obj_ct01.CT01_NUMIMAGES = Convert.ToInt32(dt.Rows[i]["ct01_numimages"].ToString());
+                    obj_ct01.CT01_NUMREJECTS = Convert.ToInt32(dt.Rows[i]["ct01_numrejects"].ToString());
+                    obj_ct01.CT01_PROIRITY = Convert.ToInt32(dt.Rows[i]["ct01_proirity"].ToString());
+                    obj_ct01.CT01_OVERLAY = dt.Rows[i]["ct01_overlay"].ToString();
+                    obj_ct01.CT01_TRANSTYPE = dt.Rows[i]["ct01_transtype"].ToString();
+                    obj_ct01.Delmark = Delmark.False;
+
+                    CT01List.Add(obj_ct01);
+                    
+                }
+                return CT01List;
+
+            }
+            catch (Exception e)
+            {
+                throw new IOException(e.Message + " " + e.Source);
+            }
+        }
+
+        //****************************************************
     }
 }

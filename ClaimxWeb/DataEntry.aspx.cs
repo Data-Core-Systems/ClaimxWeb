@@ -59,6 +59,9 @@ namespace ClaimxWeb
 
                 //Load Batch Information
                 obj_dataaccess = new DataAccess.DataAccess();
+                
+                obj_dataaccess.UserID = mstr_userid;
+
                 CT01 obj_ct01 = obj_dataaccess.LoadBatchData(mstr_jobno, mi_code, mstr_userid, li_nextcode);
                 mstr_batchname = obj_ct01.BATCHNAME;
 
@@ -78,65 +81,8 @@ namespace ClaimxWeb
             }
         }
 
-        public  bool WriteXMLCT03(IList<CT03> Data)
-        {
-            string BatchName = Data[0].BATCHNAME;
-            int Seq = Data[0].CT03_BATCHSEQN;
+       
 
-            if(!Directory.Exists(Server.MapPath("KEY\\" + mstr_userid+"\\"+ BatchName)))
-                Directory.CreateDirectory(Server.MapPath("KEY\\" + mstr_userid + "\\" + BatchName));
-            
-            string flname = BatchName + "_CT03_" + Seq.ToString() + ".XML";
-            System.IO.File.WriteAllText(Server.MapPath("KEY\\" + mstr_userid + "\\" + BatchName + "\\" + flname), Serealize<CT03>(ref Data));
-            return true;
-        }
-
-        public bool WriteXMLCT02(IList<CT02> Data)
-        {
-            string BatchName = Data[0].BATCHNAME;
-            int Seq = Data[0].CT02_BATCHSEQN;
-
-            if (!Directory.Exists(Server.MapPath("KEY\\" + mstr_userid + "\\" + BatchName)))
-                return false;
-
-            string flname = BatchName + "_CT02_" + Seq.ToString() + ".XML";
-            System.IO.File.WriteAllText(Server.MapPath(mstr_userid + "\\" + BatchName + "\\" + flname), Serealize<CT02>(ref Data));
-            return true;
-        }
-
-        public bool WriteXMLCT01(IList<CT01> Data)
-        {
-            string BatchName = Data[0].BATCHNAME;
-
-            if (!Directory.Exists(Server.MapPath("KEY\\" + mstr_userid + "\\" + BatchName)))
-                return false;
-
-            
-            string flname = BatchName + "_CT01"  + ".XML";
-            System.IO.File.WriteAllText(Server.MapPath("KEY\\" + mstr_userid + "\\" + BatchName + "\\" + flname), Serealize<CT01>(ref Data));
-            return true;
-        }
-
-        private  string Serealize<T>(ref IList<T> items)
-        {
-            var stringwriter = new System.IO.StringWriter();
-            var serializer = new XmlSerializer(typeof(List<T>), new Type[] { typeof(T) });
-            serializer.Serialize(stringwriter, items);
-            return stringwriter.ToString();
-        }
-
-        private  List<T> DeSerealize<T>(string FullFileName)
-        {
-            try
-            {
-                var stringReader = new System.IO.StringReader(System.IO.File.ReadAllText(FullFileName));
-                var serializer = new XmlSerializer(typeof(List<T>), new Type[] {typeof(T)});
-                return (List<T>)serializer.Deserialize(stringReader);
-            }
-            catch
-            {
-                throw;
-            }
-        }
+       
     }
 }
