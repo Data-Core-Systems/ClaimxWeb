@@ -38,9 +38,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DataAccess">
-      <HintPath>..\DataAccess\bin\Debug\DataAccess.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Web.DynamicData" />
@@ -70,7 +67,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DataEntry.aspx" />
-    <Content Include="Web.config" />
+    <Content Include="Login.aspx" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataEntry.aspx.cs">
@@ -80,12 +80,23 @@
     <Compile Include="DataEntry.aspx.designer.cs">
       <DependentUpon>DataEntry.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusinessObject\BusinessObject.csproj">
       <Project>{6c1d604a-4e5e-4346-b0d0-fd76d4e1bbe2}</Project>
       <Name>BusinessObject</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccess\DataAccess.csproj">
+      <Project>{a07c23e6-576d-4726-bac0-1741d7fa84f0}</Project>
+      <Name>DataAccess</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

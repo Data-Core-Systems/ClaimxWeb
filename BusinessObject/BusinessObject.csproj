@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseMaster.cs" />
+    <Compile Include="CL01.cs" />
+    <Compile Include="CL07.cs" />
     <Compile Include="CT01.cs" />
     <Compile Include="CT02.cs" />
     <Compile Include="CT03.cs" />

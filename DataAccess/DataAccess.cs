@@ -511,20 +511,20 @@ namespace ClaimxWeb.DataAccess
             {
                 //Calling stored procedure to load batch attribute list
                 OracleParameter[] param = new OracleParameter[3];
-                param[0] = new OracleParameter("uid", uid);
-                param[1] = new OracleParameter("pwd", pwd);
+                param[0] = new OracleParameter("USERID", uid);
+                param[1] = new OracleParameter("PWD", pwd);
                
                 param[2] = new OracleParameter();
-                param[2].ParameterName = "usercl07";
+                param[2].ParameterName = "RES";
                 param[2].OracleType = OracleType.Cursor;
                 param[2].Direction = ParameterDirection.Output;
-                DataTable dt = DB.ExeSpSelect("cl07_login", param);
+                DataTable dt = DB.ExeSpSelect("DBS_LOGIN", param);
 
                 if (dt.Rows.Count > 0)
                 {
                     UserData = new CL07();
-                    UserData.CL07_USER_ID = dt.Rows[0]["cl07_user_id"].ToString();
-                    UserData.CL07_USER_NAME = dt.Rows[0]["cl07_user_name"].ToString();
+                    UserData.CL07_USER_ID = dt.Rows[0]["CL07_USER_ID"].ToString();
+                    UserData.CL07_USER_NAME = dt.Rows[0]["CL07_USER_NAME"].ToString();
                     
                 }
             }
@@ -540,26 +540,29 @@ namespace ClaimxWeb.DataAccess
             try
             {
                 //Calling stored procedure to load batch attribute list
-                OracleParameter[] param = new OracleParameter[3];
-                param[0] = new OracleParameter("uid", uid);
+                OracleParameter[] param = new OracleParameter[2];
+                param[0] = new OracleParameter("USERID", uid);
                
 
                 param[1] = new OracleParameter();
-                param[1].ParameterName = "jobcl01";
+                param[1].ParameterName = "RES";
                 param[1].OracleType = OracleType.Cursor;
                 param[1].Direction = ParameterDirection.Output;
-                DataTable dt = DB.ExeSpSelect("cl01_selectJob", param);
-
-                if (dt.Rows.Count > 0)
+                DataTable dt = DB.ExeSpSelect("DBS_GET_JOB_BY_USER", param);
+                if(dt.Rows.Count>0)
+                {
+                    JobData = new List<CL01>();
+                }
+                for (int i = 0; i < dt.Rows.Count; i++)
                 {
                     CL01 Job = new CL01();
 
-                    Job.CL01_JOB_NO = dt.Rows[0]["CL01_JOB_NO"].ToString();
-                    Job.CL01_JOB_DESC = dt.Rows[0]["CL01_JOB_DESC"].ToString();
-                    Job.CL01_CLIENT_JOB_NO = dt.Rows[0]["CL01_CLIENT_JOB_NO"].ToString();
-                    Job.CL01_CLIENT_ID = dt.Rows[0]["CL01_CLIENT_ID"].ToString();
-                    Job.CL01_STAT = dt.Rows[0]["CL01_STAT"].ToString();
-                    Job.CL01_DATABASE = dt.Rows[0]["CL01_DATABASE"].ToString();
+                    Job.CL01_JOB_NO = dt.Rows[i]["CL01_JOB_NO"].ToString();
+                    Job.CL01_JOB_DESC = dt.Rows[i]["CL01_JOB_DESC"].ToString();
+                    Job.CL01_CLIENT_JOB_NO = dt.Rows[i]["CL01_CLIENT_JOB_NO"].ToString();
+                    Job.CL01_CLIENT_ID = dt.Rows[i]["CL01_CLIENT_ID"].ToString();
+                    Job.CL01_STAT = dt.Rows[i]["CL01_STAT"].ToString();
+                    Job.CL01_DATABASE = dt.Rows[i]["CL01_DATABASE"].ToString();
 
                     JobData.Add(Job);
 
@@ -569,6 +572,30 @@ namespace ClaimxWeb.DataAccess
             {
             }
             return JobData;
+        }
+
+        public string GetDB(string jobnumber)
+        {
+            string DBName = "";
+            try
+            {
+                //Calling stored procedure to load batch attribute list
+                OracleParameter[] param = new OracleParameter[2];
+                param[0] = new OracleParameter("JOBID", jobnumber);
+
+                param[1] = new OracleParameter();
+                param[1].ParameterName = "RES";
+                param[1].OracleType = OracleType.Cursor;
+                param[1].Direction = ParameterDirection.Output;
+                DataTable dt = DB.ExeSpSelect("DBS_GETDB", param);
+                if (dt.Rows.Count > 0)
+                {
+                    DBName = dt.Rows[0]["CL04_DATABASE"].ToString();
+                }
+            }
+            catch(Exception x)
+            { }
+            return DBName;
         }
 
         //****************************************************

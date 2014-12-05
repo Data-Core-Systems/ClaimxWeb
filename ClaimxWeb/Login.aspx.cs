@@ -26,7 +26,8 @@ namespace ClaimxWeb
            if(UserData!=null)
            {
                IList<CL01> JobDetails = getJobListbyUser(UserData.CL07_USER_ID);
-               return new JavaScriptSerializer().Serialize(JobDetails);
+               string resurt= new JavaScriptSerializer().Serialize(JobDetails);
+               return resurt;
                
            }
                
@@ -41,6 +42,24 @@ namespace ClaimxWeb
             DataAccess.DataAccess da = new DataAccess.DataAccess();
             return (da.GetJobListByUser(uid));
             
+        }
+
+         [WebMethod]
+        public static string JobSelect(string jobid)
+        {
+
+            DataAccess.DataAccess da = new DataAccess.DataAccess();
+            string DBName = da.GetDB(jobid);
+            if (DBName != string.Empty)
+            {
+                //IList<CL01> JobDetails = getJobListbyUser(UserData.CL07_USER_ID);
+                //string resurt = new JavaScriptSerializer().Serialize(JobDetails);
+                //return resurt;
+                return "success";
+            }
+
+            else
+                return "fail";
         }
     }
 }
