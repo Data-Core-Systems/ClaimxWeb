@@ -1,0 +1,2 @@
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="TextBoxUserControl.ascx.cs" Inherits="ClaimxWeb.UserControl.TextBoxUserControl" %>
+ <div id="div1" runat="server" /><input id="txtBox" type="text" runat="server" />

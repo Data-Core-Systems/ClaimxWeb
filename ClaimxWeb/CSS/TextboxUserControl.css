@@ -1,0 +1,14 @@
+﻿.Visible 
+{
+    display:none;
+}
+.TextBoxClass
+{
+    margin:10px;
+    float:left;
+    text-transform: uppercase;
+}
+.TextBoxFirstClass
+{
+   clear:both;
+}

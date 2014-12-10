@@ -7,27 +7,27 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ClaimxWeb {
+namespace ClaimxWeb.UserControl {
     
     
-    public partial class DataEntry {
+    public partial class TextBoxUserControl {
         
         /// <summary>
-        /// form1 control.
+        /// div1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div1;
         
         /// <summary>
-        /// dvMain control.
+        /// txtBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl dvMain;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText txtBox;
     }
 }

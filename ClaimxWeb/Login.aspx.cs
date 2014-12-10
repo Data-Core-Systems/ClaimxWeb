@@ -55,11 +55,18 @@ namespace ClaimxWeb
                 //IList<CL01> JobDetails = getJobListbyUser(UserData.CL07_USER_ID);
                 //string resurt = new JavaScriptSerializer().Serialize(JobDetails);
                 //return resurt;
+                setDB(DBName);
+                
                 return "success";
             }
 
             else
                 return "fail";
         }
+
+        private static void setDB(string DBName)
+         {
+             HttpContext.Current.Session["DBName"] = DBName;
+         }
     }
 }

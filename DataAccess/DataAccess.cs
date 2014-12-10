@@ -16,7 +16,23 @@ namespace ClaimxWeb.DataAccess
 {
     public class DataAccess
     {
-        public SQL DB = new SQL(System.Configuration.ConfigurationManager.ConnectionStrings["Conn"].ConnectionString);
+        public SQL DB = null;
+
+       public DataAccess()
+        {
+          
+           //sourik
+            if (HttpContext.Current.Session["DBName"] != null)
+                DB = new SQL(HttpContext.Current.Session["DBName"].ToString());
+           else
+                DB = new SQL(System.Configuration.ConfigurationManager.ConnectionStrings["Conn"].ConnectionString);
+        }
+
+        public DataAccess(string DBName)
+       {
+           DB = new SQL(DBName);
+       }
+       
         public string UserID = "";
 
         //Connection to database
@@ -29,9 +45,9 @@ namespace ClaimxWeb.DataAccess
         }
 
         //Load the data from claimx_ct01
-        public CT01 LoadBatchData(string JobNo,int stage,string userid,int nextStage)
+        public CT01 LoadBatchData(string JobNo, int stage, string userid, int nextStage)
         {
-          //ConnectDB();
+            //ConnectDB();
             try
             {
                 //Calling stored procedure to load batch attribute list
@@ -67,7 +83,7 @@ namespace ClaimxWeb.DataAccess
                     obj_ct01.CT01_PROIRITY = Convert.ToInt32(dt.Rows[0]["ct01_proirity"].ToString());
                     obj_ct01.CT01_OVERLAY = dt.Rows[0]["ct01_overlay"].ToString();
                     obj_ct01.CT01_TRANSTYPE = dt.Rows[0]["ct01_transtype"].ToString();
-                    obj_ct01.Delmark = Delmark.False;
+                    obj_ct01.Delmark = dt.Rows[0]["ct01_delmark"].ToString(); ;
 
                     return obj_ct01;
                 }
@@ -75,7 +91,7 @@ namespace ClaimxWeb.DataAccess
                 {
                     throw new IOException("No batch found");
                 }
-               
+
             }
             catch (Exception e)
             {
@@ -84,9 +100,9 @@ namespace ClaimxWeb.DataAccess
         }
 
         //Load the data from claimx_ct02
-        public CT02 LoadImageDataSeq(string JobNo, string BatchNo, int  Seq)
+        public CT02 LoadImageDataSeq(string JobNo, string BatchNo, int Seq)
         {
-        
+
             //ConnectDB();
             try
             {
@@ -105,19 +121,20 @@ namespace ClaimxWeb.DataAccess
                 {
                     //Creating object for ct01
                     CT02 obj_ct02 = new CT02();
-                    obj_ct02.JOBNUMBER= dt.Rows[0]["ct02_jobnumber"].ToString();
-                    obj_ct02.BATCHNAME= dt.Rows[0]["CT02_BATCHNAME"].ToString();
-                    obj_ct02.CT02_BATCHSEQN= Convert.ToInt32(dt.Rows[0]["CT02_BATCHSEQN"].ToString());
-                    obj_ct02.CT02_ICN=dt.Rows[0]["CT02_ICN"].ToString();
-                    obj_ct02.CT02_FORMTYPE= dt.Rows[0]["CT02_FORMTYPE"].ToString();   
-                    obj_ct02.CT02_IMAGEPATH= dt.Rows[0]["CT02_IMAGEPATH"].ToString();  
-                    obj_ct02.CT02_CLAIMSTAT=dt.Rows[0]["CT02_CLAIMSTAT"].ToString();  
-                    obj_ct02.Delmark = Delmark.False;
+                    obj_ct02.JOBNUMBER = dt.Rows[0]["ct02_jobnumber"].ToString();
+                    obj_ct02.BATCHNAME = dt.Rows[0]["CT02_BATCHNAME"].ToString();
+                    obj_ct02.CT02_BATCHSEQN = Convert.ToInt32(dt.Rows[0]["CT02_BATCHSEQN"].ToString());
+                    obj_ct02.CT02_ICN = dt.Rows[0]["CT02_ICN"].ToString();
+                    obj_ct02.CT02_FORMTYPE = dt.Rows[0]["CT02_FORMTYPE"].ToString();
+                    obj_ct02.CT02_IMAGEPATH = dt.Rows[0]["CT02_IMAGEPATH"].ToString();
+                    obj_ct02.CT02_CLAIMSTAT = dt.Rows[0]["CT02_CLAIMSTAT"].ToString();
+                    obj_ct02.Delmark = dt.Rows[0]["CT02_DELMARK"].ToString();
+
                     return obj_ct02;
                 }
                 else
                 {
-                    throw new IOException("No batch found");
+                    throw new IOException("No Image found");
                 }
             }
             catch (Exception e)
@@ -142,7 +159,7 @@ namespace ClaimxWeb.DataAccess
                 param[3].OracleType = OracleType.Cursor;
                 param[3].Direction = ParameterDirection.Output;
                 DataTable dt = DB.ExeSpSelect("ct02_batchselect", param);
-                
+
                 List<CT02> objlist_CT02 = new List<CT02>();
 
                 if (dt.Rows.Count > 0)
@@ -158,7 +175,7 @@ namespace ClaimxWeb.DataAccess
                         obj_ct02.CT02_FORMTYPE = dt.Rows[c]["CT02_FORMTYPE"].ToString();
                         obj_ct02.CT02_IMAGEPATH = dt.Rows[c]["CT02_IMAGEPATH"].ToString();
                         obj_ct02.CT02_CLAIMSTAT = dt.Rows[c]["CT02_CLAIMSTAT"].ToString();
-                        obj_ct02.Delmark = Delmark.False;
+                        obj_ct02.Delmark = dt.Rows[c]["CT02_DELMARK"].ToString();
                         objlist_CT02.Add(obj_ct02);
                     }
                     return objlist_CT02;
@@ -167,7 +184,7 @@ namespace ClaimxWeb.DataAccess
                 }
                 else
                 {
-                    throw new IOException("No batch found");
+                    throw new IOException("No Image found");
                 }
             }
             catch (Exception e)
@@ -176,7 +193,7 @@ namespace ClaimxWeb.DataAccess
             }
         }
         //Load the data from claimx_ct03
-        public List<CT03> LoadFieldData(string JobNo, string batchName,int batchseqn)
+        public List<CT03> LoadFieldData(string JobNo, string batchName, int batchseqn)
         {
             //ConnectDB();
 
@@ -232,7 +249,7 @@ namespace ClaimxWeb.DataAccess
                         obj_ct03.CT03_FIELD_SWIDTH = Convert.ToInt32(dt.Rows[c]["CT03_FIELD_SWIDTH"].ToString());
                         obj_ct03.CT03_FIELD_REJECT = dt.Rows[c]["CT03_FIELD_REJECT"].ToString();
                         obj_ct03.CT03_FIELD_FLAG = dt.Rows[c]["CT03_FIELD_FLAG"].ToString();
-                        obj_ct03.Delmark = Delmark.False;
+                        obj_ct03.Delmark = dt.Rows[c]["CT03_DELMARK"].ToString();
                         objList_CT03.Add(obj_ct03);
                     }
 
@@ -241,7 +258,7 @@ namespace ClaimxWeb.DataAccess
                 }
                 else
                 {
-                    throw new IOException("No batch found");
+                    throw new IOException("No field Info found");
                 }
 
             }
@@ -254,7 +271,7 @@ namespace ClaimxWeb.DataAccess
         //Load the data from claimx_ct04
         public List<CT04> LoadScreenData(string JobNo, string batchName, int batchseqn)
         {
-         
+
             //ConnectDB();
             try
             {
@@ -296,7 +313,7 @@ namespace ClaimxWeb.DataAccess
                         obj_ct04.CT04_IMAGE_Y = Convert.ToInt32(dt.Rows[c]["CT04_IVP_Y"].ToString());
                         obj_ct04.CT04_IMAGE_HEIGHT = Convert.ToInt32(dt.Rows[c]["CT04_IVP_H"].ToString());
                         obj_ct04.CT04_IMAGE_WIDTH = Convert.ToInt32(dt.Rows[c]["CT04_IVP_W"].ToString());
-                        obj_ct04.Delmark = Delmark.False;
+                        obj_ct04.Delmark = dt.Rows[c]["CT04_DELMARK"].ToString(); ;
                         dtobj_CT04.Add(obj_ct04);
                     }
 
@@ -305,7 +322,7 @@ namespace ClaimxWeb.DataAccess
                 }
                 else
                 {
-                    throw new IOException("No batch found");
+                    throw new IOException("No Screen information found");
                 }
 
             }
@@ -432,9 +449,9 @@ namespace ClaimxWeb.DataAccess
                 param[0] = new OracleParameter("mstr_job", SingleRecord.JOBNUMBER);
                 param[1] = new OracleParameter("mstr_batch", SingleRecord.BATCHNAME);
                 param[2] = new OracleParameter("mstr_seq", SingleRecord.CT03_BATCHSEQN);
-                param[3] = new OracleParameter("mstr_fld_seq", SingleRecord.CT03_FIELDSEQN);
+                param[3] = new OracleParameter("mstr_frm_fld_id", SingleRecord.CT03_FORM_FIELD_ID);
                 param[4] = new OracleParameter("mstr_fld_data", SingleRecord.CT03_FIELD_DATA);
-                param[5] = new OracleParameter("mstr_fld_data", SingleRecord.CT03_FIELD_REJECT);
+                param[5] = new OracleParameter("mstr_fld_rej", SingleRecord.CT03_FIELD_REJECT);
                 
                 param[6] = new OracleParameter();
 
@@ -490,7 +507,7 @@ namespace ClaimxWeb.DataAccess
                     obj_ct01.CT01_PROIRITY = Convert.ToInt32(dt.Rows[i]["ct01_proirity"].ToString());
                     obj_ct01.CT01_OVERLAY = dt.Rows[i]["ct01_overlay"].ToString();
                     obj_ct01.CT01_TRANSTYPE = dt.Rows[i]["ct01_transtype"].ToString();
-                    obj_ct01.Delmark = Delmark.False;
+                    obj_ct01.Delmark = "N";
 
                     CT01List.Add(obj_ct01);
                     
