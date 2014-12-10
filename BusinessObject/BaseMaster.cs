@@ -6,30 +6,25 @@ using System.Threading.Tasks;
 
 namespace ClaimxWeb.BusinessObject
 {
-    public enum Delmark
-    {
-        True = 'Y',
-        False = 'N',
-
-    }
+    
     public class BaseMaster
     {
         private string _jobnumber;
         private string _batchname;
-        private Delmark _delmark;
+        private string _delmark;
 
         public BaseMaster(string Job, string Batch)
         {
             _jobnumber = Job;
             _batchname = Batch;
-            _delmark = Delmark.False;
+            _delmark = "N"; 
         }
 
         public BaseMaster()
         {
             _jobnumber = "";
             _batchname = "";
-            _delmark = Delmark.False;
+            _delmark = "N";
         }
         public string JOBNUMBER
         {
@@ -53,7 +48,7 @@ namespace ClaimxWeb.BusinessObject
                 _batchname = value;
             }
         }
-        public Delmark Delmark
+        public string Delmark
         {
             get
             {
